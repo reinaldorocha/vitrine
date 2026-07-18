@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Inter', system-ui, -apple-system, sans-serif;
+
+  --color-brand-magenta: #ff00ff;
+  --color-brand-light-magenta: #ffabf3;
+  --color-brand-dark-magenta: #5b005b;
+  --color-brand-gray-dark: #131313;
+  --color-brand-gray-light: #e2e2e2;
+
+  --animate-pulse-slow: pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+body {
+  background-color: #0d0d0d;
+  color: #e2e2e2;
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #0d0d0d;
+}
+::-webkit-scrollbar-thumb {
+  background: #1f1f1f;
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #ff00ff;
+}
+
+/* Glass components */
+.glass-card {
+  background: rgba(19, 19, 19, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 0, 255, 0.12);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-card:hover {
+  border-color: rgba(255, 0, 255, 0.5);
+  box-shadow: 0 0 25px rgba(255, 0, 255, 0.15);
+}
+
+.gradient-text {
+  background: linear-gradient(135deg, #ffabf3 0%, #ff00ff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.btn-magenta {
+  background: #ff00ff;
+  color: #ffffff;
+  font-weight: 700;
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.btn-magenta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+  background: #ff33ff;
+}
+
+.btn-magenta:active {
+  transform: scale(0.96);
+}
+
+/* Custom Markdown Body Styling due to Tailwind reset */
+.markdown-body p {
+  margin-bottom: 1em !important;
+  white-space: pre-wrap !important;
+}
+.markdown-body p:last-child {
+  margin-bottom: 0 !important;
+}
+.markdown-body strong, .markdown-body b {
+  font-weight: 900 !important;
+  color: #fff !important;
+}
+.markdown-body em, .markdown-body i {
+  font-style: italic !important;
+}
+.markdown-body a {
+  text-decoration: underline !important;
+  color: var(--color-brand-magenta) !important;
+}
+.markdown-body ul {
+  list-style-type: disc !important;
+  padding-left: 1.5em !important;
+  margin-bottom: 1em !important;
+}
+.markdown-body ol {
+  list-style-type: decimal !important;
+  padding-left: 1.5em !important;
+  margin-bottom: 1em !important;
+}
+.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4 {
+  font-weight: 900 !important;
+  margin-top: 1.5em !important;
+  margin-bottom: 0.5em !important;
+  color: #fff !important;
+  line-height: 1.3 !important;
+}
+
+/* Explicit font sizes for our "Texto Grande", "Texto Médio", etc sizes */
+.markdown-body h1 {
+  font-size: 1.875rem !important; /* text-3xl */
+}
+.markdown-body h2 {
+  font-size: 1.25rem !important; /* text-xl */
+}
+.markdown-body h3 {
+  font-size: 1.125rem !important; /* text-lg */
+}
+.markdown-body h4 {
+  font-size: 1rem !important;
+}

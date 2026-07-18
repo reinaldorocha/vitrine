@@ -1,0 +1,6 @@
+{
+  "name": "Escola de Ministérios Marcio Gonçalves",
+  "description": "Vitrine de cursos e ferramentas para te ajudar a desenvolver seu ministério e crescimento pessoal.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
