@@ -202,12 +202,13 @@ async function initDb() {
     const isMysql = !!process.env.DB_HOST;
 
     if (isMysql) {
-      console.log("Conectando ao banco de dados MySQL...");
       const host = cleanEnvVar(process.env.DB_HOST);
       const port = Number(cleanEnvVar(process.env.DB_PORT) || 3306);
       const user = cleanEnvVar(process.env.DB_USER);
       const password = cleanEnvVar(process.env.DB_PASSWORD);
       const dbName = cleanEnvVar(process.env.DB_NAME) || "vitrine_db";
+
+      console.log(`Tentando conectar ao banco de dados MySQL em ${host}:${port}...`);
 
       // Connect without specifying database name first to create it if it doesn't exist
       const tempConnection = await mysql.createConnection({
@@ -215,12 +216,15 @@ async function initDb() {
         port,
         user,
         password,
-        multipleStatements: true
+        multipleStatements: true,
+        connectTimeout: 5000
       });
 
+      console.log(`Garantindo a existência do banco de dados "${dbName}"...`);
       await tempConnection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
       await tempConnection.end();
 
+      console.log("Conectando com o banco de dados selecionado...");
       // Reconnect with database selected
       const connection = await mysql.createConnection({
         host,
@@ -228,7 +232,8 @@ async function initDb() {
         user,
         password,
         database: dbName,
-        multipleStatements: true
+        multipleStatements: true,
+        connectTimeout: 5000
       });
 
       db = {
