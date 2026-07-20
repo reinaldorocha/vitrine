@@ -16,6 +16,9 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [selectedApprovalImage, setSelectedApprovalImage] = useState<string | null>(null);
   const [openFaqId, setOpenFaqId] = useState<number | null>(null);
+  const [visibleCount, setVisibleCount] = useState<number>(8);
+
+  const PRODUCTS_PER_PAGE = 8;
 
   // Dynamically extract categories active in our products database
   const activeCategories = [
@@ -27,10 +30,18 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
     ? products
     : products.filter((p) => p.category === selectedCategory);
 
+  const visibleProducts = filteredProducts.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredProducts.length;
+
+  const handleCategoryChange = (cat: string) => {
+    setSelectedCategory(cat);
+    setVisibleCount(PRODUCTS_PER_PAGE);
+  };
+
   // Global School WhatsApp Contact
   const defaultWhatsapp = "5521998332541";
   const wppNumber = siteSettings?.globalWhatsapp || defaultWhatsapp;
-  const globalWhatsappUrl = `https://wa.me/${wppNumber}?text=Olá!%20Achei%20sua%20escola%20pela%20vitrine%20e%20gostaria%20de%20mais%20informações%20sobre%20os%20cursos.`;
+  const globalWhatsappUrl = `https://wa.me/${wppNumber}?text=Olá!%20Achei%20sua%20loja%20pela%20vitrine%20e%20gostaria%20de%20mais%20informações%20sobre%20os%20produtos.`;
 
   const handleProductAction = (product: Product) => {
     // Open the directly assigned whatsapp link or general checkout
@@ -38,7 +49,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
       window.open(product.buttonLink, "_blank", "noopener,noreferrer");
     } else {
       // In case it's a relative placeholder, construct a helpful WhatsApp URL automatically!
-      const encodedText = encodeURIComponent(`Olá! Tenho interesse no curso "${product.title}" que vi na vitrine. Como funciona a inscrição?`);
+      const encodedText = encodeURIComponent(`Olá! Tenho interesse no produto "${product.title}" que vi na vitrine. Como funciona a compra?`);
       const dynamicWaUrl = `https://wa.me/${wppNumber}?text=${encodedText}`;
       window.open(dynamicWaUrl, "_blank", "noopener,noreferrer");
     }
@@ -249,7 +260,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
               {activeCategories.map((cat) => (
                 <button
                   key={cat}
-                  onClick={() => setSelectedCategory(cat)}
+                  onClick={() => handleCategoryChange(cat)}
                   className={`px-4 py-2 text-xs font-bold rounded-lg transition-all cursor-pointer border ${
                     selectedCategory === cat
                       ? "bg-brand-magenta text-white border-brand-magenta shadow-[0_0_12px_rgba(255,0,255,0.25)]"
@@ -266,14 +277,15 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
           {filteredProducts.length === 0 ? (
             <div className="text-center py-16 bg-[#0e0e0e] border border-white/5 rounded-2xl max-w-md mx-auto space-y-4">
               <Sparkles size={36} className="text-brand-magenta/30 mx-auto" />
-              <h3 className="text-base font-bold text-white">Nenhum curso cadastrado nesta categoria</h3>
+              <h3 className="text-base font-bold text-white">Nenhum produto cadastrado nesta categoria</h3>
               <p className="text-brand-gray-light/50 text-xs px-6">
                 Gerencie as turmas e opções no painel de controle do administrador usando o botão no topo ou rodapé.
               </p>
             </div>
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {filteredProducts.map((product) => {
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {visibleProducts.map((product) => {
                 const isPromo = !!product.originalPrice;
                 
                 return (
@@ -360,8 +372,33 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
 
                   </div>
                 );
-              })}
-            </div>
+                })}
+              </div>
+
+              {/* Load More Button */}
+              {hasMore && (
+                <div className="flex flex-col items-center gap-2 pt-4">
+                  <p className="text-xs text-brand-gray-light/40">
+                    Exibindo <span className="text-white font-bold">{visibleCount}</span> de <span className="text-white font-bold">{filteredProducts.length}</span> produtos
+                  </p>
+                  <button
+                    onClick={() => setVisibleCount(v => v + PRODUCTS_PER_PAGE)}
+                    className="group mt-1 px-8 py-3.5 rounded-full border border-brand-magenta/30 bg-brand-magenta/5 hover:bg-brand-magenta/15 hover:border-brand-magenta/60 text-white text-xs font-black uppercase tracking-widest transition-all duration-300 cursor-pointer flex items-center gap-2.5 shadow-[0_0_20px_rgba(255,0,255,0.05)] hover:shadow-[0_0_25px_rgba(255,0,255,0.15)]"
+                  >
+                    <span>Carregar Mais</span>
+                    <svg className="w-4 h-4 text-brand-magenta group-hover:translate-y-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+                </div>
+              )}
+
+              {!hasMore && filteredProducts.length > PRODUCTS_PER_PAGE && (
+                <p className="text-center text-xs text-brand-gray-light/30 pt-2">
+                  ✓ Todos os {filteredProducts.length} produtos exibidos
+                </p>
+              )}
+            </>
           )}
 
         </div>

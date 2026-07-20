@@ -208,7 +208,7 @@ export default function AdminPanel({
     setFormError("");
 
     if (!formData.title.trim()) {
-      setFormError("Informe o título do curso/produto.");
+      setFormError("Informe o título do produto.");
       return;
     }
     if (!formData.description.trim()) {
@@ -231,7 +231,7 @@ export default function AdminPanel({
     // Auto-generate dynamic WhatsApp message template if button link is empty
     let finalBtLink = formData.buttonLink.trim();
     if (!finalBtLink) {
-      const textToConsultant = `Olá! Vi o curso "${formData.title}" na vitrine e gostaria de me matricular.`;
+      const textToConsultant = `Olá! Vi o produto "${formData.title}" na vitrine e gostaria de saber mais.`;
       const numericWpp = settingsForm?.globalWhatsapp || "5521998332541";
       finalBtLink = `https://wa.me/${numericWpp.replace(/\D/g, "")}?text=${encodeURIComponent(textToConsultant)}`;
     }
@@ -386,7 +386,7 @@ export default function AdminPanel({
                   : "border-transparent text-brand-gray-light/60 hover:text-white"
               }`}
             >
-              <BookOpen size={14} /> Cursos / Produtos
+              <BookOpen size={14} /> Produtos
             </button>
             <button
               onClick={() => setActiveTab("approvals")}
@@ -455,7 +455,7 @@ export default function AdminPanel({
                   <span className="w-6 h-6 rounded-lg bg-brand-magenta/10 border border-brand-magenta/30 flex items-center justify-center text-brand-magenta font-black">
                     {isEditing === "new" ? "+" : "✎"}
                   </span>
-                  {isEditing === "new" ? "Cadastrar Novo Curso" : "Editar Detalhes do Curso"}
+                  {isEditing === "new" ? "Cadastrar Novo Produto" : "Editar Detalhes do Produto"}
                 </h3>
 
                 <form onSubmit={handleSubmit} className="space-y-5">
@@ -469,7 +469,7 @@ export default function AdminPanel({
                   {/* Title */}
                   <div className="space-y-2">
                     <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80">
-                      Nome do Cursos / Título *
+                      Nome do Produto / Título *
                     </label>
                     <input
                       type="text"
@@ -485,7 +485,7 @@ export default function AdminPanel({
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 flex items-center gap-1 block">
-                        <Tag size={12} className="text-brand-magenta" /> Categoria do Curso *
+                        <Tag size={12} className="text-brand-magenta" /> Categoria do Produto *
                       </label>
                       <input
                         type="text"
