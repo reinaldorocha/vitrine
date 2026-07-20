@@ -1,13 +1,20 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
 @import "tailwindcss";
 
+:root {
+  --color-brand-magenta: #ff00ff;
+  --color-brand-light-magenta: #ffabf3;
+  --color-brand-dark-magenta: #5b005b;
+  --color-brand-magenta-rgb: 255, 0, 255;
+}
+
 @theme {
   --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
   --font-display: 'Inter', system-ui, -apple-system, sans-serif;
 
-  --color-brand-magenta: #ff00ff;
-  --color-brand-light-magenta: #ffabf3;
-  --color-brand-dark-magenta: #5b005b;
+  --color-brand-magenta: var(--color-brand-magenta);
+  --color-brand-light-magenta: var(--color-brand-light-magenta);
+  --color-brand-dark-magenta: var(--color-brand-dark-magenta);
   --color-brand-gray-dark: #131313;
   --color-brand-gray-light: #e2e2e2;
 
@@ -32,7 +39,7 @@ body {
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #ff00ff;
+  background: var(--color-brand-magenta);
 }
 
 /* Glass components */
@@ -40,23 +47,23 @@ body {
   background: rgba(19, 19, 19, 0.7);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 0, 255, 0.12);
+  border: 1px solid rgba(var(--color-brand-magenta-rgb), 0.12);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .glass-card:hover {
-  border-color: rgba(255, 0, 255, 0.5);
-  box-shadow: 0 0 25px rgba(255, 0, 255, 0.15);
+  border-color: rgba(var(--color-brand-magenta-rgb), 0.5);
+  box-shadow: 0 0 25px rgba(var(--color-brand-magenta-rgb), 0.15);
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #ffabf3 0%, #ff00ff 100%);
+  background: linear-gradient(135deg, var(--color-brand-light-magenta) 0%, var(--color-brand-magenta) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
 .btn-magenta {
-  background: #ff00ff;
+  background: var(--color-brand-magenta);
   color: #ffffff;
   font-weight: 700;
   transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -64,8 +71,8 @@ body {
 
 .btn-magenta:hover {
   transform: translateY(-2px);
-  box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
-  background: #ff33ff;
+  box-shadow: 0 0 20px rgba(var(--color-brand-magenta-rgb), 0.5);
+  filter: brightness(1.15);
 }
 
 .btn-magenta:active {

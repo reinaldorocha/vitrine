@@ -25,4 +25,29 @@ export interface SiteSettings {
   adminSubtitle?: string;
   footerText?: string;
   globalWhatsapp?: string;
+  siteName?: string;
+  heroTitle?: string;
+  heroSubtitle?: string;
+  heroBadge?: string;
+  seoTitle?: string;
+  seoDescription?: string;
+  faviconUrl?: string;
+  aboutTitle?: string;
+  aboutText?: string;
+  aboutImageUrl?: string;
+  catalogSubtitle?: string;
+  approvalsTitle?: string;
+  approvalsSubtitle?: string;
+  primaryColor?: string;
+  approvalsBadge?: string;
+  faqTitle?: string;
+  faqSubtitle?: string;
+  heroImageUrl?: string;
+  heroButtonText?: string;
+}
+
+export interface Faq {
+  id: number;
+  question: string;
+  answer: string;
 }

@@ -1,17 +1,21 @@
 import React, { useState } from "react";
 import { MessageSquare, LogIn, ExternalLink, Sparkles, Filter, CheckCircle2, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { Product, SiteSettings } from "../types";
+import { Product, SiteSettings, Faq } from "../types";
 
 interface VisitorShowcaseProps {
   products: Product[];
   siteSettings: SiteSettings;
   onNavigateToLogin: () => void;
+  approvals: { id: number; imageUrl: string }[];
+  faqs: Faq[];
 }
 
-export default function VisitorShowcase({ products, siteSettings, onNavigateToLogin }: VisitorShowcaseProps) {
+export default function VisitorShowcase({ products, siteSettings, onNavigateToLogin, approvals, faqs }: VisitorShowcaseProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>("Todos");
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedApprovalImage, setSelectedApprovalImage] = useState<string | null>(null);
+  const [openFaqId, setOpenFaqId] = useState<number | null>(null);
 
   // Dynamically extract categories active in our products database
   const activeCategories = [
@@ -64,37 +68,54 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
             title="Dica: Dê um clique duplo para acessar o painel administrador"
             className="flex items-center gap-2 cursor-pointer transition-transform duration-200 hover:scale-[1.02] select-none"
           >
-            <img 
-              src={siteSettings?.logoUrl || "https://i.ibb.co/zj7h3M5/logo-ESCOLA-CURSOS.png"}
-              alt="Logo ESCOLA CURSOS" 
-              referrerPolicy="no-referrer"
-              className="h-10 md:h-12 w-auto object-contain max-w-[180px]"
-              onError={(e) => {
-                // Friendly fallback text if the remote host experiences interruptions
-                (e.target as HTMLElement).style.display = 'none';
-                const el = document.getElementById('logo-fallback-text');
-                if (el) el.style.display = 'block';
-              }}
-            />
+            {siteSettings?.logoUrl && (
+              <img 
+                src={siteSettings.logoUrl}
+                alt="Logo ESCOLA CURSOS" 
+                referrerPolicy="no-referrer"
+                className="h-10 md:h-12 w-auto object-contain max-w-[180px]"
+                onError={(e) => {
+                  (e.target as HTMLElement).style.display = 'none';
+                  const el = document.getElementById('logo-fallback-text');
+                  if (el) el.style.display = 'block';
+                }}
+              />
+            )}
             {/* Fallback school banner */}
             <span id="logo-fallback-text" className="hidden text-xl font-black text-white italic tracking-tight">
               ESCOLA<span className="text-brand-magenta">CURSOS</span>
             </span>
-            <span className="text-white font-bold text-xs sm:text-sm tracking-wide hidden sm:block">
-              ESCOLA DE MINISTÉRIOS MARCIO GONÇALVES
-            </span>
+            {siteSettings?.siteName && (
+              <span className="text-white font-bold text-xs sm:text-sm tracking-wide hidden sm:block">
+                {siteSettings.siteName}
+              </span>
+            )}
           </div>
 
           {/* Main action buttons block */}
           <div className="flex items-center gap-2 md:gap-4">
+            {approvals && approvals.length > 0 && (
+              <a
+                href="#approvals"
+                className="px-4 py-2 rounded-full border border-white/10 hover:border-brand-magenta/40 text-brand-gray-light hover:text-white font-bold text-xs md:text-sm uppercase tracking-wide transition-all cursor-pointer"
+              >
+                Aprovações
+              </a>
+            )}
             <a
-              href="https://wa.me/5521998332541"
+              href="#about"
+              className="px-4 py-2 rounded-full border border-white/10 hover:border-brand-magenta/40 text-brand-gray-light hover:text-white font-bold text-xs md:text-sm uppercase tracking-wide transition-all cursor-pointer"
+            >
+              Quem Sou Eu
+            </a>
+            <a
+              href={globalWhatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
               className="px-4 py-2 rounded-full border border-emerald-500 text-emerald-500 hover:bg-emerald-500/10 font-bold text-xs md:text-sm uppercase tracking-wide flex items-center gap-2 transition-all cursor-pointer"
             >
               <MessageSquare size={16} />
-              <span className="hidden sm:inline">Contatos</span>
+              <span className="hidden sm:inline">Contato</span>
             </a>
           </div>
         </nav>
@@ -127,60 +148,69 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
           
           {/* Main Hero information for Cursos Digitais */}
           <div className="lg:w-3/5 space-y-5 text-center lg:text-left relative z-10">
-            <span className="inline-block px-3.5 py-1 rounded-full bg-brand-dark-magenta/30 border border-brand-magenta/25 text-white/95 text-[10px] font-black tracking-widest uppercase">
-              ✨ CURSOS MINISTERIAIS
-            </span>
+            {siteSettings?.heroBadge && (
+              <span className="inline-block px-3.5 py-1 rounded-full bg-brand-dark-magenta/30 border border-brand-magenta/25 text-white/95 text-[10px] font-black tracking-widest uppercase">
+                {siteSettings.heroBadge}
+              </span>
+            )}
 
-            <h1 className="text-3xl sm:text-5xl md:text-6xl font-black leading-[1.1] text-white tracking-tight">
-              CONHEÇA TODOS OS <br />
-              NOSSOS <span className="gradient-text">RECURSOS</span>
-            </h1>
+            {siteSettings?.heroTitle && (
+              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black leading-[1.1] text-white tracking-tight">
+                {(() => {
+                  const title = siteSettings.heroTitle;
+                  const words = title.split(" ");
+                  if (words.length > 1) {
+                    const lastWord = words.pop();
+                    const initialText = words.join(" ");
+                    return (
+                      <>
+                        {initialText} <span className="gradient-text">{lastWord}</span>
+                      </>
+                    );
+                  }
+                  return title;
+                })()}
+              </h1>
+            )}
 
-            <p className="text-sm sm:text-base text-brand-gray-light/70 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
-              São diversos cursos e ferramentas para te ajudar a desenvolver seu ministério e crescimento pessoal.
-            </p>
+            {siteSettings?.heroSubtitle && (
+              <p className="text-sm sm:text-base text-brand-gray-light/70 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
+                {siteSettings.heroSubtitle}
+              </p>
+            )}
 
-            <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3.5 pt-2">
-              <button
-                onClick={() => {
-                  const el = document.getElementById("catalog-section");
-                  if (el) el.scrollIntoView({ behavior: "smooth" });
-                }}
-                className="btn-magenta px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,0,255,0.2)] cursor-pointer"
-              >
-                Conhecer Cursos
-              </button>
-            </div>
+            {siteSettings?.heroButtonText && (
+              <div className="flex flex-col sm:flex-row justify-center lg:justify-start gap-3.5 pt-2">
+                <button
+                  onClick={() => {
+                    const el = document.getElementById("catalog-section");
+                    if (el) el.scrollIntoView({ behavior: "smooth" });
+                  }}
+                  className="btn-magenta px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,0,255,0.2)] cursor-pointer"
+                >
+                  {siteSettings.heroButtonText}
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Elegant Display Banner supporting the ESCOLA CURSOS logo */}
+          {/* Elegant Display Banner supporting the Hero Image */}
           <div className="lg:w-2/5 w-full relative">
             <motion.div
-              initial={{ opacity: 0, rotate: 1, y: 10 }}
-              animate={{ opacity: 1, rotate: 0, y: 0 }}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7 }}
-              className="glass-card p-3 rounded-2xl shadow-2xl relative border-brand-magenta/15 overflow-hidden max-w-[420px] mx-auto"
+              className="relative overflow-hidden max-w-[420px] mx-auto rounded-3xl shadow-2xl border border-white/10 shadow-[0_0_50px_rgba(255,0,255,0.08)] group"
             >
-              <div className="relative rounded-xl overflow-hidden bg-[#121212] flex items-center justify-center p-6 min-h-[220px]">
-                {/* Large responsive logo card visual */}
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,0,255,0.15)_0%,transparent_100%)] z-0" />
-                <img
-                  src="https://i.ibb.co/zj7h3M5/logo-ESCOLA-CURSOS.png"
-                  alt="Escola Cursos Banner"
-                  referrerPolicy="no-referrer"
-                  className="w-auto h-24 object-contain relative z-10 transition-transform duration-500 hover:scale-105"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?q=80&w=350&auto=format&fit=crop";
-                  }}
-                />
-              </div>
-
-              <div className="mt-4 p-3 rounded-lg bg-[#0e0e0e] border border-white/5 flex items-center justify-between">
-                <span className="text-[10px] text-brand-gray-light/40 font-mono tracking-wider">PLATAFORMA ATIVA</span>
-                <span className="text-[10px] text-brand-magenta font-extrabold flex items-center gap-1.5 animate-pulse">
-                  <span className="w-1.5 h-1.5 rounded-full bg-brand-magenta" /> INSCRIÇÕES ABERTAS
-                </span>
-              </div>
+              <img
+                src={siteSettings?.heroImageUrl || "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop"}
+                alt="Plataforma de Cursos"
+                referrerPolicy="no-referrer"
+                className="w-full h-auto max-h-[380px] object-cover rounded-3xl transition-transform duration-500 group-hover:scale-105"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop";
+                }}
+              />
             </motion.div>
           </div>
 
@@ -194,14 +224,20 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
       >
         <div className="max-w-[1280px] mx-auto space-y-12">
           
-          <div className="text-center space-y-3">
-            <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
-              Vitrine de Cursos e Ferramentas
-            </h2>
-            <p className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
-              Escolha seu foco, turbine sua qualificação e receba suporte dedicado. Filtre por categoria abaixo:
-            </p>
-          </div>
+          {(siteSettings?.headerTitle || siteSettings?.catalogSubtitle) && (
+            <div className="text-center space-y-3">
+              {siteSettings?.headerTitle && (
+                <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                  {siteSettings.headerTitle}
+                </h2>
+              )}
+              {siteSettings?.catalogSubtitle && (
+                <p className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
+                  {siteSettings.catalogSubtitle}
+                </p>
+              )}
+            </div>
+          )}
 
           {/* Highly Responsive Horizontal Category Pills/Filter Tabs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -331,29 +367,253 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
         </div>
       </section>
 
+      {/* SEÇÃO QUEM SOU EU / QUEM SOMOS */}
+      {(siteSettings?.aboutText || siteSettings?.aboutTitle) && (
+        <section 
+          id="about" 
+          className="bg-[#0a0a0a] py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden"
+        >
+          {/* Decorative radial gradients */}
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-brand-magenta/5 blur-[120px] rounded-full pointer-events-none" />
+
+          <div className="max-w-[1000px] mx-auto relative z-10">
+            <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
+              
+              {/* Photo Box */}
+              {siteSettings?.aboutImageUrl && (
+                <div className="w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden bg-[#121212] border border-brand-magenta/20 shadow-[0_0_30px_rgba(255,0,255,0.08)] shrink-0 self-center md:self-start">
+                  <img 
+                    src={siteSettings.aboutImageUrl} 
+                    alt={siteSettings?.aboutTitle || "Foto do Mentor"} 
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover object-top hover:scale-[1.03] transition-transform duration-300"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=400&auto=format&fit=crop";
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Bio Content Box */}
+              <div className="flex-grow space-y-5 text-center md:text-left">
+                {(siteSettings?.aboutTitle || siteSettings?.aboutText) && (
+                  <span className="inline-block px-3.5 py-1 rounded-full bg-brand-dark-magenta/30 border border-brand-magenta/25 text-white/95 text-[10px] font-black tracking-widest uppercase">
+                    Conheça o Mentor
+                  </span>
+                )}
+                
+                {siteSettings?.aboutTitle && (
+                  <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                    {siteSettings.aboutTitle}
+                  </h2>
+                )}
+
+                {siteSettings?.aboutText && (
+                  <div className="text-sm sm:text-base text-brand-gray-light/80 leading-relaxed font-light space-y-4 max-w-2xl mx-auto md:mx-0 whitespace-pre-line">
+                    {siteSettings.aboutText}
+                  </div>
+                )}
+              </div>
+
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* SEÇÃO DE APROVAÇÕES / FEEDBACKS */}
+      {approvals && approvals.length > 0 && (
+        <section id="approvals" className="bg-black py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden">
+          <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-brand-magenta/5 blur-[120px] rounded-full pointer-events-none" />
+          
+          <div className="max-w-[1280px] mx-auto space-y-12 relative z-10">
+            {(siteSettings?.approvalsBadge || siteSettings?.approvalsTitle || siteSettings?.approvalsSubtitle) && (
+              <div className="text-center space-y-3">
+                {siteSettings?.approvalsBadge && (
+                  <span className="inline-block px-3.5 py-1 rounded-full bg-brand-dark-magenta/30 border border-brand-magenta/25 text-white/95 text-[10px] font-black tracking-widest uppercase">
+                    {siteSettings.approvalsBadge}
+                  </span>
+                )}
+                {siteSettings?.approvalsTitle && (
+                  <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight uppercase">
+                    {siteSettings.approvalsTitle}
+                  </h2>
+                )}
+                {siteSettings?.approvalsSubtitle && (
+                  <p className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
+                    {siteSettings.approvalsSubtitle}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Approvals Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+              {approvals.map((a) => (
+                <div 
+                  key={a.id}
+                  onClick={() => setSelectedApprovalImage(a.imageUrl)}
+                  className="rounded-2xl overflow-hidden border border-white/5 bg-[#0e0e0e] aspect-[4/5] relative group cursor-pointer hover:border-brand-magenta/40 hover:-translate-y-1 transition-all duration-300 shadow-[0_4px_20px_rgba(0,0,0,0.3)]"
+                >
+                  <img 
+                    src={a.imageUrl} 
+                    alt="Arte de Aprovado / Feedback" 
+                    referrerPolicy="no-referrer"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1523240795612-9a054b0db644?q=80&w=350";
+                    }}
+                  />
+                  {/* Hover Overlay */}
+                  <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-105 flex items-center justify-center transition-all duration-300">
+                    <span className="bg-brand-magenta text-white font-bold text-xs uppercase px-4 py-2 rounded-full tracking-wider shadow-lg">
+                      Visualizar
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Lightbox Modal */}
+          <AnimatePresence>
+            {selectedApprovalImage && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setSelectedApprovalImage(null)}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-sm cursor-zoom-out"
+              >
+                <motion.div
+                  initial={{ scale: 0.95 }}
+                  animate={{ scale: 1 }}
+                  exit={{ scale: 0.95 }}
+                  className="max-w-4xl max-h-[85vh] relative"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <button
+                    onClick={() => setSelectedApprovalImage(null)}
+                    className="absolute -top-12 right-0 md:-right-12 text-white/70 hover:text-white p-2 text-sm uppercase tracking-wider flex items-center gap-1 cursor-pointer"
+                  >
+                    Fechar ×
+                  </button>
+                  <img 
+                    src={selectedApprovalImage} 
+                    alt="Depoimento Ampliado" 
+                    referrerPolicy="no-referrer"
+                    className="max-w-full max-h-[80vh] rounded-xl object-contain border border-white/10 shadow-2xl"
+                  />
+                </motion.div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </section>
+      )}
+
+      {/* SEÇÃO DE PERGUNTAS FREQUENTES (FAQ) */}
+      {faqs && faqs.length > 0 && (
+        <section id="faq" className="bg-[#070707] py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden">
+          <div className="absolute bottom-0 left-1/4 w-[350px] h-[350px] bg-brand-magenta/5 blur-[100px] rounded-full pointer-events-none" />
+          
+          <div className="max-w-[800px] mx-auto space-y-12 relative z-10">
+            {(siteSettings?.faqTitle || siteSettings?.faqSubtitle) && (
+              <div className="text-center space-y-3">
+                <span className="inline-block px-3.5 py-1 rounded-full bg-brand-dark-magenta/30 border border-brand-magenta/25 text-white/95 text-[10px] font-black tracking-widest uppercase">
+                  FAQ
+                </span>
+                {siteSettings?.faqTitle && (
+                  <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight uppercase">
+                    {siteSettings.faqTitle}
+                  </h2>
+                )}
+                {siteSettings?.faqSubtitle && (
+                  <p className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
+                    {siteSettings.faqSubtitle}
+                  </p>
+                )}
+              </div>
+            )}
+
+            <div className="space-y-4">
+              {faqs.map((faq) => {
+                const isOpen = openFaqId === faq.id;
+                return (
+                  <div
+                    key={faq.id}
+                    onClick={() => setOpenFaqId(isOpen ? null : faq.id)}
+                    className="bg-[#0f0f0f]/60 hover:bg-[#121212]/80 border border-white/5 transition-all duration-300 rounded-2xl p-5 cursor-pointer overflow-hidden group"
+                  >
+                    <div className="flex items-center justify-between gap-4">
+                      <h3 className="font-bold text-white text-sm md:text-base pr-4 select-none group-hover:text-brand-light-magenta transition-colors">
+                        {faq.question}
+                      </h3>
+                      <div className="shrink-0 w-8 h-8 rounded-full bg-[#181818] border border-white/5 flex items-center justify-center group-hover:border-brand-magenta/40 transition-colors">
+                        <svg 
+                          className={`w-4 h-4 text-brand-gray-light/60 group-hover:text-brand-light-magenta transition-transform duration-300 ${isOpen ? 'transform rotate-180 text-brand-magenta' : ''}`} 
+                          fill="none" 
+                          stroke="currentColor" 
+                          viewBox="0 0 24 24"
+                        >
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
+                        </svg>
+                      </div>
+                    </div>
+
+                    <AnimatePresence initial={false}>
+                      {isOpen && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                          animate={{ height: "auto", opacity: 1, marginTop: 16 }}
+                          exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                          transition={{ duration: 0.25, ease: "easeInOut" }}
+                          className="overflow-hidden border-t border-white/5 pt-4"
+                        >
+                          <p className="text-xs sm:text-sm text-brand-gray-light/70 leading-relaxed font-light whitespace-pre-line">
+                            {faq.answer}
+                          </p>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* FOOTER & ADMINISTRATIVE LAUNCH PORTAL */}
       <footer className="bg-[#0a0a0a] py-12 border-t border-white/5 text-xs">
         <div className="max-w-[1280px] mx-auto px-4 md:px-8 flex flex-col md:flex-row justify-between items-center gap-6 text-center md:text-left">
           
           <div className="flex flex-col md:flex-row items-center justify-center md:justify-start gap-4 md:gap-6 w-full md:w-auto">
-            <img 
-              src={siteSettings?.logoUrl || "https://i.ibb.co/zj7h3M5/logo-ESCOLA-CURSOS.png"}
-              alt="Logo Cursos" 
-              referrerPolicy="no-referrer"
-              className="h-8 md:h-12 w-auto object-contain"
-            />
-            <p className="text-brand-gray-light/50 text-center md:text-left font-medium max-w-sm">
-              {siteSettings?.footerText || "Vitrine Oficial da ESCOLA DE MINISTÉRIOS MG. Todos os direitos reservados."}
-            </p>
+            {siteSettings?.logoUrl && (
+              <img 
+                src={siteSettings.logoUrl}
+                alt="Logo Cursos" 
+                referrerPolicy="no-referrer"
+                className="h-8 md:h-12 w-auto object-contain"
+              />
+            )}
+            {siteSettings?.footerText && (
+              <p className="text-brand-gray-light/50 text-center md:text-left font-medium max-w-sm">
+                {siteSettings.footerText}
+              </p>
+            )}
           </div>
 
           {/* Links structure with Admin Restricted flow */}
           <div className="flex flex-wrap justify-center gap-6 text-brand-gray-light/50 font-semibold tracking-wider uppercase items-center">
             <a href={`https://wa.me/${wppNumber}`} target="_blank" rel="noopener noreferrer" className="px-4 py-2 rounded-full border border-emerald-500 text-emerald-500 hover:bg-emerald-500/10 transition-all flex items-center gap-1.5 font-bold text-xs">
-              <MessageSquare size={14} /> CONTATOS
+              <MessageSquare size={14} /> CONTATO
             </a>
-            <a href="#about" className="hover:text-brand-magenta transition-all">Quem somos</a>
-            <a href="#help" className="hover:text-brand-magenta transition-all">Ajuda</a>
+            <a href="#about" className="hover:text-brand-magenta transition-all">Quem sou eu</a>
+            {approvals && approvals.length > 0 && (
+              <a href="#approvals" className="hover:text-brand-magenta transition-all">Aprovações</a>
+            )}
+            {faqs && faqs.length > 0 && (
+              <a href="#faq" className="hover:text-brand-magenta transition-all">FAQ</a>
+            )}
             
             {/* Private restrict access only button requested */}
             {/* Ocultado da interface pública a pedido */}
@@ -466,6 +726,26 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* BOTÃO FLUTUANTE DO WHATSAPP */}
+      <a
+        href={globalWhatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-40 bg-[#25D366] hover:bg-[#20ba5a] text-white p-4 rounded-full shadow-[0_4px_16px_rgba(37,211,102,0.35)] hover:shadow-[0_4px_24px_rgba(37,211,102,0.5)] hover:scale-110 transition-all duration-300 flex items-center justify-center cursor-pointer group"
+        title="Fale conosco no WhatsApp"
+      >
+        <svg 
+          className="w-6 h-6 fill-white" 
+          viewBox="0 0 24 24" 
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.457L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.625 1.451 5.437 0 9.862-4.416 9.866-9.856.002-2.636-1.022-5.11-2.883-6.973C16.34 1.912 13.869.88 11.242.88 5.806.88 1.381 5.295 1.377 10.733c-.001 1.517.402 2.996 1.168 4.3l-.973 3.555 3.644-.955c1.282.7 2.658 1.07 4.041 1.071h.002zM17.47 15.22c-.298-.15-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+        </svg>
+        
+        {/* Glowing pulse wave */}
+        <span className="absolute inset-0 rounded-full border-2 border-[#25D366]/40 animate-ping pointer-events-none" />
+      </a>
 
     </div>
   );

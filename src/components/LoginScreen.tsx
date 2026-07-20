@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Eye, EyeOff, ShieldAlert, ArrowLeft } from "lucide-react";
 import { motion } from "motion/react";
 import { ScreenState } from "../types";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../lib/firebase";
+import { api } from "../lib/api";
 
 interface LoginScreenProps {
   onBack: () => void;
@@ -30,21 +29,11 @@ export default function LoginScreen({ onBack, onLoginSuccess }: LoginScreenProps
     setIsLoading(true);
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await api.login(email, password);
       onLoginSuccess();
     } catch (error: any) {
-      console.error("Firebase Login Error:", error);
-      let errorMessage = "Credenciais inválidas. Verifique seu e-mail e senha.";
-      
-      if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
-        errorMessage = "Usuário não encontrado ou senha incorreta. Você já criou este usuário no painel do Firebase?";
-      } else if (error.code === 'auth/operation-not-allowed') {
-        errorMessage = "O login por E-mail/Senha não está ativado no seu Firebase.";
-      } else if (error.message) {
-        errorMessage = `Erro: ${error.message}`;
-      }
-      
-      setErrorMsg(errorMessage);
+      console.error("Backend Login Error:", error);
+      setErrorMsg(error.message || "Credenciais inválidas. Verifique seu e-mail e senha.");
     } finally {
       setIsLoading(false);
     }
