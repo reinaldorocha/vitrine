@@ -194,12 +194,26 @@ async function initDb() {
 
     if (isMysql) {
       console.log("Conectando ao banco de dados MySQL...");
+      // Connect without specifying database name first to create it if it doesn't exist
+      const tempConnection = await mysql.createConnection({
+        host: process.env.DB_HOST,
+        port: Number(process.env.DB_PORT || 3306),
+        user: process.env.DB_USER,
+        password: process.env.DB_PASSWORD,
+        multipleStatements: true
+      });
+
+      const dbName = process.env.DB_NAME || "vitrine_db";
+      await tempConnection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
+      await tempConnection.end();
+
+      // Reconnect with database selected
       const connection = await mysql.createConnection({
         host: process.env.DB_HOST,
         port: Number(process.env.DB_PORT || 3306),
         user: process.env.DB_USER,
         password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
+        database: dbName,
         multipleStatements: true
       });
 
@@ -417,11 +431,13 @@ async function initDb() {
       console.log(`Usuário administrador padrão criado: ${email}`);
     }
 
+    const insertIgnoreKeyword = isMysql ? "INSERT IGNORE" : "INSERT OR IGNORE";
+
     // Seed Categories
     const categoriesCount = await db.get("SELECT COUNT(*) as count FROM categories");
     if (categoriesCount.count === 0) {
       for (const cat of INITIAL_CATEGORIES) {
-        await db.run("INSERT OR IGNORE INTO categories (name) VALUES (?)", [cat]);
+        await db.run(`${insertIgnoreKeyword} INTO categories (name) VALUES (?)`, [cat]);
       }
       console.log("Categorias padrão inseridas no banco.");
     }
@@ -430,7 +446,7 @@ async function initDb() {
     const settingsExist = await db.get("SELECT * FROM site_settings WHERE id = 1");
     if (!settingsExist) {
       await db.run(`
-        INSERT OR IGNORE INTO site_settings (id, headerTitle, adminTitle, adminSubtitle, footerText, siteName, heroTitle, heroSubtitle, heroBadge, seoTitle, seoDescription, faviconUrl, aboutTitle, aboutText, aboutImageUrl, catalogSubtitle, approvalsTitle, approvalsSubtitle, primaryColor, approvalsBadge, faqTitle, faqSubtitle, heroImageUrl, heroButtonText) 
+        ${insertIgnoreKeyword} INTO site_settings (id, headerTitle, adminTitle, adminSubtitle, footerText, siteName, heroTitle, heroSubtitle, heroBadge, seoTitle, seoDescription, faviconUrl, aboutTitle, aboutText, aboutImageUrl, catalogSubtitle, approvalsTitle, approvalsSubtitle, primaryColor, approvalsBadge, faqTitle, faqSubtitle, heroImageUrl, heroButtonText) 
         VALUES (1, 'Escola Cursos', 'Plataforma Administrativa', 'Gerencie seus cursos', '© 2026 Escola Cursos. Todos os direitos reservados.', 'Escola de Ministérios Marcio Gonçalves', 'CONHEÇA TODOS OS NOSSOS RECURSOS', 'São diversos cursos e ferramentas para te ajudar a desenvolver seu ministério e crescimento pessoal.', 'CURSOS MINISTERIAIS', 'Escola de Ministérios Marcio Gonçalves - Vitrine de Cursos', 'Vitrine de Cursos da Escola de Ministérios Marcio Gonçalves. Qualifique-se e turbine seu crescimento pessoal.', 'https://i.ibb.co/zj7h3M5/logo-ESCOLA-CURSOS.png', 'Quem Sou Eu', 'Sou Policial, e atuo como professor e mentor para concursos públicos.\nCompartilhando a experiência de 6 anos no mundo dos concursos públicos, possuo formação como Bacharel em Direito e Especialista em Direito Penal e Processo Penal. Minha primeira aprovação veio logo aos 23 anos de idade para o cargo de Guarda Civil Municipal, e atualmente exerço o cargo de Policial Penal.\n\nComecei compartilhando aulas no YouTube, logo depois a pedido dos alunos, comecei a compartilhar conteúdo no Instagram e aos poucos as coisas foram acontecendo e hoje já contamos com diversos alunos. Uma grande família de concurseiros em busca da tão somhada aprovação!\n\nA minha missão é levar conhecimento, organization, acompanhamento e facilidade para a vida dos concurseiros do Brasil que sonham por uma oportunidade. O meu objetivo é deixar sua aprovação cada vez mais próxima, quero poder ajudar pessoas comuns a se tornarem servidores públicos, assim como foi comigo!\n\nVem fazer parte do projeto mais completo do Norte e Nordeste, feito e pensado para você concurseiro.', 'https://images.unsplash.com/photo-1450133064473-71024230f91b?q=80&w=400&auto=format&fit=crop', 'Escolha seu foco, turbine sua qualificação e receba suporte dedicado. Filtre por categoria abaixo:', 'Aprovações & Depoimentos', 'Confira o feedback e os banners dos nossos alunos aprovados que alcançaram a estabilidade pública.', '#ff00ff', 'Resultados Reais', 'Perguntas Frequentes', 'Tire suas principais dúvidas sobre o acesso, pagamento e envio do material.', 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?q=80&w=600&auto=format&fit=crop', 'Conhecer Cursos')
       `);
       console.log("Configurações padrão inseridas no banco.");
@@ -537,7 +553,7 @@ Vem fazer parte do projeto mais completo do Norte e Nordeste, feito e pensado pa
 
   } catch (err: any) {
     console.error("==========================================================================");
-    console.error("AVISO: Falha ao conectar ao banco de dados SQLite.");
+    console.error("AVISO: Falha ao inicializar o banco de dados (MySQL ou SQLite).");
     console.error(`Erro: ${err.message}`);
     console.error("O servidor continuará rodando no modo FALLBACK (em memória).");
     console.error("As alterações não serão salvas após reiniciar o servidor.");
