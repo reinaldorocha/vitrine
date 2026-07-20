@@ -11,6 +11,15 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+const cleanEnvVar = (val: string | undefined): string => {
+  if (!val) return "";
+  let clean = val.trim();
+  if ((clean.startsWith('"') && clean.endsWith('"')) || (clean.startsWith("'") && clean.endsWith("'"))) {
+    clean = clean.slice(1, -1);
+  }
+  return clean.trim();
+};
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -18,8 +27,8 @@ const app = express();
 app.use(express.json());
 app.use(cookieParser());
 
-const PORT = process.env.PORT || 3001;
-const JWT_SECRET = process.env.JWT_SECRET || "sua_chave_secreta_jwt_padrao";
+const PORT = cleanEnvVar(process.env.PORT) || 3001;
+const JWT_SECRET = cleanEnvVar(process.env.JWT_SECRET) || "sua_chave_secreta_jwt_padrao";
 
 let db: any;
 let useFallback = false;
@@ -194,25 +203,30 @@ async function initDb() {
 
     if (isMysql) {
       console.log("Conectando ao banco de dados MySQL...");
+      const host = cleanEnvVar(process.env.DB_HOST);
+      const port = Number(cleanEnvVar(process.env.DB_PORT) || 3306);
+      const user = cleanEnvVar(process.env.DB_USER);
+      const password = cleanEnvVar(process.env.DB_PASSWORD);
+      const dbName = cleanEnvVar(process.env.DB_NAME) || "vitrine_db";
+
       // Connect without specifying database name first to create it if it doesn't exist
       const tempConnection = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        port: Number(process.env.DB_PORT || 3306),
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
+        host,
+        port,
+        user,
+        password,
         multipleStatements: true
       });
 
-      const dbName = process.env.DB_NAME || "vitrine_db";
       await tempConnection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
       await tempConnection.end();
 
       // Reconnect with database selected
       const connection = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        port: Number(process.env.DB_PORT || 3306),
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
+        host,
+        port,
+        user,
+        password,
         database: dbName,
         multipleStatements: true
       });
@@ -421,14 +435,18 @@ async function initDb() {
       }
     }
 
-    // Seed Admin User
-    const adminUser = await db.get("SELECT * FROM users LIMIT 1");
+    // Seed and Sync Admin User
+    const email = cleanEnvVar(process.env.ADMIN_EMAIL) || "admin@admin.com";
+    const pass = cleanEnvVar(process.env.ADMIN_PASSWORD) || "admin123";
+    const hash = hashPassword(pass);
+
+    const adminUser = await db.get("SELECT * FROM users WHERE email = ?", [email]);
     if (!adminUser) {
-      const email = process.env.ADMIN_EMAIL || "admin@admin.com";
-      const pass = process.env.ADMIN_PASSWORD || "admin123";
-      const hash = hashPassword(pass);
       await db.run("INSERT INTO users (email, password_hash) VALUES (?, ?)", [email, hash]);
       console.log(`Usuário administrador padrão criado: ${email}`);
+    } else {
+      await db.run("UPDATE users SET password_hash = ? WHERE email = ?", [hash, email]);
+      console.log(`Senha do administrador sincronizada: ${email}`);
     }
 
     const insertIgnoreKeyword = isMysql ? "INSERT IGNORE" : "INSERT OR IGNORE";
