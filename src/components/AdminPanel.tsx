@@ -251,7 +251,8 @@ export default function AdminPanel({
       imageOrientation: formData.imageOrientation,
       buttonText: formData.buttonText.trim() || "Falar com Consultor",
       buttonLink: finalBtLink,
-      iconName: formData.iconName
+      iconName: formData.iconName || "MessageSquare",
+      priceLabel: formData.priceLabel ? formData.priceLabel.trim() : ""
     };
 
     if (isEditing === "new") {
@@ -598,7 +599,7 @@ export default function AdminPanel({
                     />
                   </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Badge */}
                     <div className="space-y-2">
                       <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80">
@@ -625,6 +626,25 @@ export default function AdminPanel({
                         placeholder="Falar com Consultor"
                         className="w-full bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta focus:ring-1 focus:ring-brand-magenta rounded-lg px-4 py-3 text-sm text-white placeholder-brand-gray-light/30 outline-none transition-all"
                       />
+                    </div>
+
+                    {/* Icon Selection */}
+                    <div className="space-y-2">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80">
+                        Ícone do Botão
+                      </label>
+                      <select
+                        value={formData.iconName || "MessageSquare"}
+                        onChange={(e) => setFormData({ ...formData, iconName: e.target.value })}
+                        className="w-full bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta rounded-lg px-4 py-3 text-sm text-white outline-none cursor-pointer"
+                      >
+                        <option value="MessageSquare">💬 Balão de Conversa (WhatsApp)</option>
+                        <option value="ShoppingCart">🛒 Carrinho de Compras</option>
+                        <option value="BookOpen">📖 Livro / Curso</option>
+                        <option value="Sparkles">✨ Estrelas / Destaque</option>
+                        <option value="ExternalLink">🔗 Link / Seta Externo</option>
+                        <option value="Check">✓ Check / Verificado</option>
+                      </select>
                     </div>
                   </div>
 
