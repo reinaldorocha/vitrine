@@ -366,7 +366,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                         className="btn-magenta w-full py-3 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all shadow-[0_2px_12px_rgba(255,0,255,0.1)]"
                       >
                         <MessageSquare size={13} className="text-white fill-white/10" />
-                        <span>QUERO COMEÇAR AGORA</span>
+                        <span>{product.buttonText || "QUERO COMEÇAR AGORA"}</span>
                       </button>
                     </div>
 
@@ -753,7 +753,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                         className="btn-magenta w-full sm:w-auto px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(255,0,255,0.25)] hover:scale-105 transition-all"
                       >
                         <MessageSquare size={16} className="text-white fill-white/10" />
-                        <span>QUERO COMEÇAR AGORA</span>
+                        <span>{selectedProduct.buttonText || "QUERO COMEÇAR AGORA"}</span>
                       </button>
                     </div>
                   </div>
