@@ -224,36 +224,40 @@ async function initDb() {
       await tempConnection.query(`CREATE DATABASE IF NOT EXISTS \`${dbName}\``);
       await tempConnection.end();
 
-      console.log("Conectando com o banco de dados selecionado...");
-      // Reconnect with database selected
-      const connection = await mysql.createConnection({
+      console.log("Conectando com o banco de dados selecionado (Pool com Auto-Reconexão)...");
+      const pool = mysql.createPool({
         host,
         port,
         user,
         password,
         database: dbName,
         multipleStatements: true,
-        connectTimeout: 5000
+        connectTimeout: 5000,
+        waitForConnections: true,
+        connectionLimit: 10,
+        queueLimit: 0,
+        enableKeepAlive: true,
+        keepAliveInitialDelay: 10000
       });
 
       db = {
         all: async (q, p) => {
-          const [rows] = await connection.execute(q, p);
+          const [rows] = await pool.execute(q, p);
           return rows as any[];
         },
         get: async (q, p) => {
-          const [rows] = await connection.execute(q, p);
+          const [rows] = await pool.execute(q, p);
           return (rows as any[])[0];
         },
         run: async (q, p) => {
-          const [result] = await connection.execute(q, p);
+          const [result] = await pool.execute(q, p);
           return { lastID: (result as any).insertId };
         },
         exec: async (q) => {
-          await connection.query(q);
+          await pool.query(q);
         }
       };
-      console.log("Banco de dados MySQL conectado e pronto.");
+      console.log("Banco de dados MySQL conectado e pronto com Pool de conexões.");
     } else {
       console.log("Conectando ao banco de dados SQLite local...");
       const dbPath = process.env.DATABASE_PATH || path.join(__dirname, "database.db");
