@@ -358,7 +358,8 @@ async function initDb() {
           imageOrientation VARCHAR(50) DEFAULT 'square',
           buttonText VARCHAR(255) NOT NULL,
           buttonLink TEXT NOT NULL,
-          iconName VARCHAR(255)
+          iconName VARCHAR(255),
+          priceLabel VARCHAR(255)
         )
       `);
     } else {
@@ -410,7 +411,8 @@ async function initDb() {
           subtitleColor TEXT,
           titleFontSize TEXT,
           sectionTitleFontSize TEXT,
-          buttonStyle TEXT
+          buttonStyle TEXT,
+          priceLabel TEXT
         )
       `);
       await db.exec(`
@@ -440,16 +442,17 @@ async function initDb() {
           imageOrientation TEXT DEFAULT 'square',
           buttonText TEXT NOT NULL,
           buttonLink TEXT NOT NULL,
-          iconName TEXT
+          iconName TEXT,
+          priceLabel TEXT
         )
       `);
     }
 
-    // Dynamically alter site_settings to add new columns if upgrading from an existing database file
+    // Dynamically alter site_settings & products to add new columns if upgrading from an existing database file
     const newColumns = [
       "siteName", "heroTitle", "heroSubtitle", "heroBadge", "seoTitle", "seoDescription", "faviconUrl",
       "aboutTitle", "aboutText", "aboutImageUrl", "catalogSubtitle", "approvalsTitle", "approvalsSubtitle", "primaryColor", "approvalsBadge", "faqTitle", "faqSubtitle", "heroImageUrl", "heroButtonText",
-      "bgColor", "cardBgColor", "titleColor", "subtitleColor", "titleFontSize", "sectionTitleFontSize", "buttonStyle"
+      "bgColor", "cardBgColor", "titleColor", "subtitleColor", "titleFontSize", "sectionTitleFontSize", "buttonStyle", "priceLabel"
     ];
     for (const col of newColumns) {
       try {
@@ -457,6 +460,11 @@ async function initDb() {
       } catch (e) {
         // Column probably already exists, safe to ignore
       }
+    }
+    try {
+      await db.exec(`ALTER TABLE products ADD COLUMN priceLabel TEXT`);
+    } catch (e) {
+      // Column probably already exists
     }
 
     // Seed and Sync Admin User
@@ -735,12 +743,12 @@ app.post("/api/products", authenticateToken, async (req, res) => {
       return res.json({ success: true, product: p });
     }
     await db.run(`
-      INSERT INTO products (id, title, description, longDescription, originalPrice, promoPrice, category, badge, imageUrl, imageOrientation, buttonText, buttonLink, iconName)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO products (id, title, description, longDescription, originalPrice, promoPrice, category, badge, imageUrl, imageOrientation, buttonText, buttonLink, iconName, priceLabel)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `, [
       p.id, p.title, p.description, p.longDescription || null, p.originalPrice || null, 
       p.promoPrice, p.category, p.badge || null, p.imageUrl, p.imageOrientation || "square", 
-      p.buttonText, p.buttonLink, p.iconName || null
+      p.buttonText, p.buttonLink, p.iconName || null, p.priceLabel || null
     ]);
     return res.json({ success: true, product: p });
   } catch (error: any) {
@@ -765,12 +773,12 @@ app.put("/api/products/:id", authenticateToken, async (req, res) => {
     await db.run(`
       UPDATE products 
       SET title = ?, description = ?, longDescription = ?, originalPrice = ?, promoPrice = ?, 
-          category = ?, badge = ?, imageUrl = ?, imageOrientation = ?, buttonText = ?, buttonLink = ?, iconName = ?
+          category = ?, badge = ?, imageUrl = ?, imageOrientation = ?, buttonText = ?, buttonLink = ?, iconName = ?, priceLabel = ?
       WHERE id = ?
     `, [
       p.title, p.description, p.longDescription || null, p.originalPrice || null, 
       p.promoPrice, p.category, p.badge || null, p.imageUrl, p.imageOrientation || "square", 
-      p.buttonText, p.buttonLink, p.iconName || null, id
+      p.buttonText, p.buttonLink, p.iconName || null, p.priceLabel || null, id
     ]);
     return res.json({ success: true, product: p });
   } catch (error: any) {

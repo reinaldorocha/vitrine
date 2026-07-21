@@ -12,6 +12,7 @@ export interface Product {
   buttonText: string;
   buttonLink: string;
   iconName?: string;
+  priceLabel?: string;
 }
 
 export type ScreenState = "visitor" | "login" | "admin";
@@ -51,6 +52,7 @@ export interface SiteSettings {
   titleFontSize?: string;
   sectionTitleFontSize?: string;
   buttonStyle?: string;
+  priceLabel?: string;
 }
 
 export interface Faq {

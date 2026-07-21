@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { MessageSquare, LogIn, ExternalLink, Sparkles, Filter, CheckCircle2, X } from "lucide-react";
+import { MessageSquare, LogIn, ExternalLink, Sparkles, Filter, CheckCircle2, X, ShoppingCart, BookOpen, Check } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { Product, SiteSettings, Faq } from "../types";
 
@@ -81,6 +81,23 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
   const subtitleStyle = siteSettings?.subtitleColor ? { color: siteSettings.subtitleColor } : {};
   const cardStyle = siteSettings?.cardBgColor ? { backgroundColor: siteSettings.cardBgColor } : {};
   const siteBgStyle = siteSettings?.bgColor ? { backgroundColor: siteSettings.bgColor } : {};
+
+  const renderButtonIcon = (iconName?: string, size = 13) => {
+    switch (iconName) {
+      case "ShoppingCart":
+        return <ShoppingCart size={size} className="text-white" />;
+      case "BookOpen":
+        return <BookOpen size={size} className="text-white" />;
+      case "Sparkles":
+        return <Sparkles size={size} className="text-white" />;
+      case "ExternalLink":
+        return <ExternalLink size={size} className="text-white" />;
+      case "Check":
+        return <Check size={size} className="text-white" />;
+      default:
+        return <MessageSquare size={size} className="text-white fill-white/10" />;
+    }
+  };
 
   return (
     <div id="visitor-storefront" style={siteBgStyle} className="bg-[#0a0a0a] text-[#e2e2e2] overflow-x-hidden min-h-screen">
@@ -258,7 +275,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
       {/* FILTER AND DYNAMIC CATALOGUE GRID */}
       <section 
         id="catalog-section"
-        className="bg-[#070707] py-16 px-4 md:px-8 border-t border-[#121212] relative"
+        className="bg-transparent py-16 px-4 md:px-8 border-t border-white/5 relative"
       >
         <div className="max-w-[1280px] mx-auto space-y-12">
           
@@ -364,8 +381,10 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
 
                     {/* Pricing section with exact "$" por "$" promotional styling requested */}
                     <div className="mt-5 pt-3.5 border-t border-white/5 space-y-4">
-                      <div className="bg-[#121212]/50 p-2.5 rounded-lg border border-white/5 flex flex-col justify-between">
-                        <span className="text-[9px] uppercase font-bold tracking-wider text-brand-gray-light/40">Plano de Acesso</span>
+                      <div className="bg-[#121212]/50 p-2.5 rounded-lg border border-white/5 flex flex-col justify-between" style={cardStyle}>
+                        <span className="text-[9px] uppercase font-bold tracking-wider text-brand-gray-light/40">
+                          {product.priceLabel || siteSettings?.priceLabel || "Plano de Acesso"}
+                        </span>
                         
                         <div className="flex items-baseline gap-2 mt-1">
                           {isPromo ? (
@@ -393,7 +412,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                         }}
                         className={`btn-magenta w-full py-3 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all shadow-[0_2px_12px_rgba(255,0,255,0.1)] ${getBtnRadiusClass()}`}
                       >
-                        <MessageSquare size={13} className="text-white fill-white/10" />
+                        {renderButtonIcon(product.iconName, 13)}
                         <span>{product.buttonText || "QUERO COMEÇAR AGORA"}</span>
                       </button>
                     </div>
@@ -436,17 +455,17 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
       {(siteSettings?.aboutText || siteSettings?.aboutTitle) && (
         <section 
           id="about" 
-          className="bg-[#0a0a0a] py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden"
+          className="bg-transparent py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden"
         >
           {/* Decorative radial gradients */}
           <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[500px] h-[500px] bg-brand-magenta/5 blur-[120px] rounded-full pointer-events-none" />
 
           <div className="max-w-[1000px] mx-auto relative z-10">
-            <div className="flex flex-col md:flex-row items-center md:items-start gap-12">
+            <div className="flex flex-col md:flex-row items-center md:items-center gap-12">
               
               {/* Photo Box */}
               {siteSettings?.aboutImageUrl && (
-                <div className="w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden bg-[#121212] border border-brand-magenta/20 shadow-[0_0_30px_rgba(255,0,255,0.08)] shrink-0 self-center md:self-start">
+                <div className="w-48 h-48 md:w-64 md:h-64 rounded-2xl overflow-hidden bg-[#121212] border border-brand-magenta/20 shadow-[0_0_30px_rgba(255,0,255,0.08)] shrink-0 self-center md:self-center">
                   <img 
                     src={siteSettings.aboutImageUrl} 
                     alt={siteSettings?.aboutTitle || "Foto do Mentor"} 
@@ -487,7 +506,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
 
       {/* SEÇÃO DE APROVAÇÕES / FEEDBACKS */}
       {approvals && approvals.length > 0 && (
-        <section id="approvals" className="bg-black py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden">
+        <section id="approvals" className="bg-transparent py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden">
           <div className="absolute top-0 right-1/4 w-[400px] h-[400px] bg-brand-magenta/5 blur-[120px] rounded-full pointer-events-none" />
           
           <div className="max-w-[1280px] mx-auto space-y-12 relative z-10">
@@ -577,7 +596,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
 
       {/* SEÇÃO DE PERGUNTAS FREQUENTES (FAQ) */}
       {faqs && faqs.length > 0 && (
-        <section id="faq" className="bg-[#070707] py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden">
+        <section id="faq" className="bg-transparent py-20 px-4 md:px-8 border-t border-white/5 relative overflow-hidden">
           <div className="absolute bottom-0 left-1/4 w-[350px] h-[350px] bg-brand-magenta/5 blur-[100px] rounded-full pointer-events-none" />
           
           <div className="max-w-[800px] mx-auto space-y-12 relative z-10">
@@ -754,35 +773,37 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                   <div className="mt-8 pt-6 border-t border-white/5">
                     <div className="bg-[#121212]/50 p-4 rounded-xl border border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
                       
-                      <div className="text-center sm:text-left">
-                        <span className="text-[10px] uppercase font-bold tracking-wider text-brand-gray-light/40 block mb-1">
-                          Investimento
-                        </span>
-                        <div className="flex items-baseline gap-2 justify-center sm:justify-start">
-                          {selectedProduct.originalPrice ? (
-                            <>
-                              <span className="text-sm text-brand-gray-light/40 line-through font-medium">
-                                {selectedProduct.originalPrice}
-                              </span>
+                      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-white/5">
+                        <div>
+                          <span className="text-[10px] uppercase font-bold tracking-wider text-brand-gray-light/40 block mb-1">
+                            {selectedProduct.priceLabel || siteSettings?.priceLabel || "Investimento"}
+                          </span>
+                          <div className="flex items-baseline gap-2 justify-center sm:justify-start">
+                            {selectedProduct.originalPrice ? (
+                              <>
+                                <span className="text-sm text-brand-gray-light/40 line-through font-medium">
+                                  {selectedProduct.originalPrice}
+                                </span>
+                                <span className="text-brand-magenta font-black text-2xl tracking-tight">
+                                  {selectedProduct.promoPrice}
+                                </span>
+                              </>
+                            ) : (
                               <span className="text-brand-magenta font-black text-2xl tracking-tight">
                                 {selectedProduct.promoPrice}
                               </span>
-                            </>
-                          ) : (
-                            <span className="text-brand-magenta font-black text-2xl tracking-tight">
-                              {selectedProduct.promoPrice}
-                            </span>
-                          )}
+                            )}
+                          </div>
                         </div>
-                      </div>
 
-                      <button
-                        onClick={() => handleProductAction(selectedProduct)}
-                        className="btn-magenta w-full sm:w-auto px-8 py-4 rounded-xl text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(255,0,255,0.25)] hover:scale-105 transition-all"
-                      >
-                        <MessageSquare size={16} className="text-white fill-white/10" />
-                        <span>{selectedProduct.buttonText || "QUERO COMEÇAR AGORA"}</span>
-                      </button>
+                        <button
+                          onClick={() => handleProductAction(selectedProduct)}
+                          className={`btn-magenta w-full sm:w-auto px-8 py-4 text-sm font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer shadow-[0_0_20px_rgba(255,0,255,0.25)] hover:scale-105 transition-all ${getBtnRadiusClass()}`}
+                        >
+                          {renderButtonIcon(selectedProduct.iconName, 16)}
+                          <span>{selectedProduct.buttonText || "QUERO COMEÇAR AGORA"}</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>

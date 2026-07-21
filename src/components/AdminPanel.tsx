@@ -128,7 +128,8 @@ export default function AdminPanel({
     imageOrientation: "horizontal" as "horizontal" | "vertical" | "square",
     buttonText: "Falar com Consultor",
     buttonLink: "",
-    iconName: "Sparkles"
+    iconName: "Sparkles",
+    priceLabel: ""
   });
 
   const [formError, setFormError] = useState("");
@@ -174,7 +175,8 @@ export default function AdminPanel({
       imageOrientation: "horizontal",
       buttonText: "Falar com Consultor",
       buttonLink: "",
-      iconName: "Sparkles"
+      iconName: "Sparkles",
+      priceLabel: ""
     });
     setFormError("");
     setImagePreviewError(false);
@@ -195,7 +197,8 @@ export default function AdminPanel({
       imageOrientation: p.imageOrientation || "horizontal",
       buttonText: p.buttonText || "Falar com Consultor",
       buttonLink: p.buttonLink || "",
-      iconName: p.iconName || "Sparkles"
+      iconName: p.iconName || "Sparkles",
+      priceLabel: p.priceLabel || ""
     });
     setFormError("");
     setImagePreviewError(false);
@@ -526,7 +529,21 @@ export default function AdminPanel({
                   </div>
 
                   {/* Pricing */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 bg-[#161616] p-4 rounded-xl border border-white/5">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-[#161616] p-4 rounded-xl border border-white/5">
+                    <div className="space-y-1.5">
+                      <label className="block text-xs font-extrabold uppercase tracking-wider text-brand-gray-light/80">
+                        Rótulo do Preço <span className="text-[10px] text-brand-gray-light/40 normal-case">(Opcional)</span>
+                      </label>
+                      <input
+                        type="text"
+                        value={formData.priceLabel || ""}
+                        onChange={(e) => setFormData({ ...formData, priceLabel: e.target.value })}
+                        placeholder="Ex: Plano de Acesso, Investimento..."
+                        className="w-full bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta focus:ring-1 focus:ring-brand-magenta rounded-lg px-3.5 py-2.5 text-sm text-white placeholder-brand-gray-light/30 outline-none transition-all"
+                      />
+                      <p className="text-[10px] text-brand-gray-light/40">Texto acima do preço (Padrão: Plano de Acesso)</p>
+                    </div>
+
                     <div className="space-y-1.5">
                       <label className="block text-xs font-extrabold uppercase tracking-wider text-brand-gray-light/80">
                         Preço Original (De) <span className="text-[10px] text-brand-gray-light/40 normal-case">(Opcional)</span>
@@ -1772,6 +1789,21 @@ export default function AdminPanel({
                           <option value="large">Grande (+15%)</option>
                           <option value="xlarge">Extra Grande (+30%)</option>
                         </select>
+                      </div>
+
+                      {/* Rótulo do Preço Padrão */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 mb-2">
+                          Rótulo do Preço Padrão dos Produtos
+                        </label>
+                        <input
+                          type="text"
+                          value={settingsForm?.priceLabel || ""}
+                          onChange={(e) => updateSettingsField("priceLabel", e.target.value)}
+                          className="w-full bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta rounded-lg px-4 py-3 text-sm text-white outline-none"
+                          placeholder="Ex: Plano de Acesso, Investimento..."
+                        />
+                        <p className="text-[10px] text-brand-gray-light/40 mt-1">Texto padrão que aparece acima do valor dos produtos.</p>
                       </div>
 
                       {/* Estilo dos Botões */}
