@@ -321,7 +321,14 @@ async function initDb() {
           faqTitle TEXT,
           faqSubtitle TEXT,
           heroImageUrl TEXT,
-          heroButtonText VARCHAR(255)
+          heroButtonText VARCHAR(255),
+          bgColor VARCHAR(50),
+          cardBgColor VARCHAR(50),
+          titleColor VARCHAR(50),
+          subtitleColor VARCHAR(50),
+          titleFontSize VARCHAR(50),
+          sectionTitleFontSize VARCHAR(50),
+          buttonStyle VARCHAR(50)
         )
       `);
       await db.exec(`
@@ -396,7 +403,14 @@ async function initDb() {
           faqTitle TEXT,
           faqSubtitle TEXT,
           heroImageUrl TEXT,
-          heroButtonText TEXT
+          heroButtonText TEXT,
+          bgColor TEXT,
+          cardBgColor TEXT,
+          titleColor TEXT,
+          subtitleColor TEXT,
+          titleFontSize TEXT,
+          sectionTitleFontSize TEXT,
+          buttonStyle TEXT
         )
       `);
       await db.exec(`
@@ -434,7 +448,8 @@ async function initDb() {
     // Dynamically alter site_settings to add new columns if upgrading from an existing database file
     const newColumns = [
       "siteName", "heroTitle", "heroSubtitle", "heroBadge", "seoTitle", "seoDescription", "faviconUrl",
-      "aboutTitle", "aboutText", "aboutImageUrl", "catalogSubtitle", "approvalsTitle", "approvalsSubtitle", "primaryColor", "approvalsBadge", "faqTitle", "faqSubtitle", "heroImageUrl", "heroButtonText"
+      "aboutTitle", "aboutText", "aboutImageUrl", "catalogSubtitle", "approvalsTitle", "approvalsSubtitle", "primaryColor", "approvalsBadge", "faqTitle", "faqSubtitle", "heroImageUrl", "heroButtonText",
+      "bgColor", "cardBgColor", "titleColor", "subtitleColor", "titleFontSize", "sectionTitleFontSize", "buttonStyle"
     ];
     for (const col of newColumns) {
       try {

@@ -1613,6 +1613,196 @@ export default function AdminPanel({
                     </div>
                   </div>
 
+                  {/* Personalização Estética & Tema do Site */}
+                  <div className="bg-[#121212] border border-[#1c1c1c] p-6 rounded-2xl space-y-6">
+                    <h3 className="text-lg font-bold text-white flex items-center gap-2">
+                      <Sparkles className="text-brand-magenta w-5 h-5" /> Personalização Estética (Cores, Fontes e Botões)
+                    </h3>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {/* Cor de Fundo do Site */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 mb-2">
+                          Cor de Fundo Principal do Site
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settingsForm?.bgColor || "#0a0a0a"}
+                            onChange={(e) => updateSettingsField("bgColor", e.target.value)}
+                            className="w-12 h-12 bg-transparent border-0 cursor-pointer outline-none rounded shrink-0 self-center"
+                          />
+                          <input
+                            type="text"
+                            value={settingsForm?.bgColor || "#0a0a0a"}
+                            onChange={(e) => updateSettingsField("bgColor", e.target.value)}
+                            className="flex-grow bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta rounded-lg px-4 py-3 text-sm text-white outline-none"
+                            placeholder="Ex: #0a0a0a"
+                          />
+                        </div>
+                        <div className="flex gap-1.5 mt-2">
+                          {[
+                            { name: "Preto", hex: "#0a0a0a" },
+                            { name: "Grafite", hex: "#121212" },
+                            { name: "Azul Noite", hex: "#090d16" },
+                            { name: "Roxo Noite", hex: "#11091c" }
+                          ].map((preset) => (
+                            <button
+                              key={preset.hex}
+                              type="button"
+                              onClick={() => updateSettingsField("bgColor", preset.hex)}
+                              className="text-[10px] font-semibold px-2 py-1 rounded bg-[#1c1c1c] hover:bg-[#282828] text-white border border-[#333] cursor-pointer"
+                            >
+                              {preset.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Cor de Fundo dos Cards */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 mb-2">
+                          Cor de Fundo dos Cards de Produtos
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settingsForm?.cardBgColor || "#121212"}
+                            onChange={(e) => updateSettingsField("cardBgColor", e.target.value)}
+                            className="w-12 h-12 bg-transparent border-0 cursor-pointer outline-none rounded shrink-0 self-center"
+                          />
+                          <input
+                            type="text"
+                            value={settingsForm?.cardBgColor || "#121212"}
+                            onChange={(e) => updateSettingsField("cardBgColor", e.target.value)}
+                            className="flex-grow bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta rounded-lg px-4 py-3 text-sm text-white outline-none"
+                            placeholder="Ex: #121212"
+                          />
+                        </div>
+                        <div className="flex gap-1.5 mt-2">
+                          {[
+                            { name: "Escuro", hex: "#121212" },
+                            { name: "Preto", hex: "#070707" },
+                            { name: "Azul", hex: "#111827" },
+                            { name: "Roxo", hex: "#1c102a" }
+                          ].map((preset) => (
+                            <button
+                              key={preset.hex}
+                              type="button"
+                              onClick={() => updateSettingsField("cardBgColor", preset.hex)}
+                              className="text-[10px] font-semibold px-2 py-1 rounded bg-[#1c1c1c] hover:bg-[#282828] text-white border border-[#333] cursor-pointer"
+                            >
+                              {preset.name}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Cor dos Títulos */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 mb-2">
+                          Cor dos Títulos Principais
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settingsForm?.titleColor || "#ffffff"}
+                            onChange={(e) => updateSettingsField("titleColor", e.target.value)}
+                            className="w-12 h-12 bg-transparent border-0 cursor-pointer outline-none rounded shrink-0 self-center"
+                          />
+                          <input
+                            type="text"
+                            value={settingsForm?.titleColor || "#ffffff"}
+                            onChange={(e) => updateSettingsField("titleColor", e.target.value)}
+                            className="flex-grow bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta rounded-lg px-4 py-3 text-sm text-white outline-none"
+                            placeholder="Ex: #ffffff"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Cor dos Subtítulos */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 mb-2">
+                          Cor dos Subtítulos / Textos Secundários
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="color"
+                            value={settingsForm?.subtitleColor || "#a1a1aa"}
+                            onChange={(e) => updateSettingsField("subtitleColor", e.target.value)}
+                            className="w-12 h-12 bg-transparent border-0 cursor-pointer outline-none rounded shrink-0 self-center"
+                          />
+                          <input
+                            type="text"
+                            value={settingsForm?.subtitleColor || "#a1a1aa"}
+                            onChange={(e) => updateSettingsField("subtitleColor", e.target.value)}
+                            className="flex-grow bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta rounded-lg px-4 py-3 text-sm text-white outline-none"
+                            placeholder="Ex: #a1a1aa"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Tamanho do Título do Hero */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 mb-2">
+                          Tamanho do Título Principal (Hero)
+                        </label>
+                        <select
+                          value={settingsForm?.titleFontSize || "normal"}
+                          onChange={(e) => updateSettingsField("titleFontSize", e.target.value)}
+                          className="w-full bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta rounded-lg px-4 py-3 text-sm text-white outline-none"
+                        >
+                          <option value="normal">Médio (Padrão)</option>
+                          <option value="large">Grande (+15%)</option>
+                          <option value="xlarge">Extra Grande (+30%)</option>
+                        </select>
+                      </div>
+
+                      {/* Tamanho dos Títulos de Seções */}
+                      <div>
+                        <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 mb-2">
+                          Tamanho dos Títulos das Seções
+                        </label>
+                        <select
+                          value={settingsForm?.sectionTitleFontSize || "normal"}
+                          onChange={(e) => updateSettingsField("sectionTitleFontSize", e.target.value)}
+                          className="w-full bg-[#1c1c1c] border border-[#2d2d2d] focus:border-brand-magenta rounded-lg px-4 py-3 text-sm text-white outline-none"
+                        >
+                          <option value="normal">Médio (Padrão)</option>
+                          <option value="large">Grande (+15%)</option>
+                          <option value="xlarge">Extra Grande (+30%)</option>
+                        </select>
+                      </div>
+
+                      {/* Estilo dos Botões */}
+                      <div className="md:col-span-2">
+                        <label className="block text-xs font-bold uppercase tracking-wider text-brand-gray-light/80 mb-2">
+                          Formato / Arredondamento dos Botões do Site
+                        </label>
+                        <div className="grid grid-cols-3 gap-3">
+                          {[
+                            { id: "pill", label: "Pílula (Arredondado Máximo)", style: "rounded-full" },
+                            { id: "rounded", label: "Arredondado Médio", style: "rounded-xl" },
+                            { id: "square", label: "Reto / Quadrado", style: "rounded-sm" }
+                          ].map((bStyle) => (
+                            <button
+                              key={bStyle.id}
+                              type="button"
+                              onClick={() => updateSettingsField("buttonStyle", bStyle.id)}
+                              className={`p-3 text-xs font-bold border transition-all cursor-pointer ${bStyle.style} ${
+                                (settingsForm?.buttonStyle || "pill") === bStyle.id
+                                  ? "bg-brand-magenta text-white border-brand-magenta shadow-[0_0_10px_rgba(255,0,255,0.3)]"
+                                  : "bg-[#1c1c1c] text-brand-gray-light/60 border-[#2d2d2d] hover:border-white/20"
+                              }`}
+                            >
+                              {bStyle.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Section Top Hero */}
                   <div className="bg-[#121212] border border-[#1c1c1c] p-6 rounded-2xl space-y-6">
                     <h3 className="text-lg font-bold text-white flex items-center gap-2">

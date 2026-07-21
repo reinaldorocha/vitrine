@@ -44,6 +44,13 @@ export interface SiteSettings {
   faqSubtitle?: string;
   heroImageUrl?: string;
   heroButtonText?: string;
+  bgColor?: string;
+  cardBgColor?: string;
+  titleColor?: string;
+  subtitleColor?: string;
+  titleFontSize?: string;
+  sectionTitleFontSize?: string;
+  buttonStyle?: string;
 }
 
 export interface Faq {

@@ -55,8 +55,35 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
     }
   };
 
+  // Dynamic Theme Helpers
+  const getBtnRadiusClass = () => {
+    const s = siteSettings?.buttonStyle;
+    if (s === "square") return "rounded-md";
+    if (s === "rounded") return "rounded-xl";
+    return "rounded-full"; // default pill
+  };
+
+  const getHeroTitleSizeClass = () => {
+    const s = siteSettings?.titleFontSize;
+    if (s === "large") return "text-4xl sm:text-6xl md:text-7xl";
+    if (s === "xlarge") return "text-5xl sm:text-7xl md:text-8xl";
+    return "text-3xl sm:text-5xl md:text-6xl"; // normal default
+  };
+
+  const getSectionTitleSizeClass = () => {
+    const s = siteSettings?.sectionTitleFontSize;
+    if (s === "large") return "text-3xl sm:text-5xl";
+    if (s === "xlarge") return "text-4xl sm:text-6xl";
+    return "text-2xl sm:text-4xl"; // normal default
+  };
+
+  const titleStyle = siteSettings?.titleColor ? { color: siteSettings.titleColor } : {};
+  const subtitleStyle = siteSettings?.subtitleColor ? { color: siteSettings.subtitleColor } : {};
+  const cardStyle = siteSettings?.cardBgColor ? { backgroundColor: siteSettings.cardBgColor } : {};
+  const siteBgStyle = siteSettings?.bgColor ? { backgroundColor: siteSettings.bgColor } : {};
+
   return (
-    <div id="visitor-storefront" className="bg-[#0a0a0a] text-[#e2e2e2] overflow-x-hidden min-h-screen">
+    <div id="visitor-storefront" style={siteBgStyle} className="bg-[#0a0a0a] text-[#e2e2e2] overflow-x-hidden min-h-screen">
       
       {/* Dynamic Glow Overlay matching color palette styling */}
       <div className="absolute top-0 w-full h-[700px] pointer-events-none -z-10 overflow-hidden">
@@ -166,7 +193,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
             )}
 
             {siteSettings?.heroTitle && (
-              <h1 className="text-3xl sm:text-5xl md:text-6xl font-black leading-[1.1] text-white tracking-tight">
+              <h1 style={titleStyle} className={`font-black leading-[1.1] text-white tracking-tight ${getHeroTitleSizeClass()}`}>
                 {(() => {
                   const title = siteSettings.heroTitle;
                   const words = title.split(" ");
@@ -185,7 +212,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
             )}
 
             {siteSettings?.heroSubtitle && (
-              <p className="text-sm sm:text-base text-brand-gray-light/70 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
+              <p style={subtitleStyle} className="text-sm sm:text-base text-brand-gray-light/70 max-w-xl mx-auto lg:mx-0 leading-relaxed font-light">
                 {siteSettings.heroSubtitle}
               </p>
             )}
@@ -197,7 +224,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                     const el = document.getElementById("catalog-section");
                     if (el) el.scrollIntoView({ behavior: "smooth" });
                   }}
-                  className="btn-magenta px-8 py-3.5 rounded-full text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,0,255,0.2)] cursor-pointer"
+                  className={`btn-magenta px-8 py-3.5 text-xs font-black uppercase tracking-widest hover:scale-105 transition-all shadow-[0_0_15px_rgba(255,0,255,0.2)] cursor-pointer ${getBtnRadiusClass()}`}
                 >
                   {siteSettings.heroButtonText}
                 </button>
@@ -238,12 +265,12 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
           {(siteSettings?.headerTitle || siteSettings?.catalogSubtitle) && (
             <div className="text-center space-y-3">
               {siteSettings?.headerTitle && (
-                <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+                <h2 style={titleStyle} className={`font-extrabold text-white tracking-tight ${getSectionTitleSizeClass()}`}>
                   {siteSettings.headerTitle}
                 </h2>
               )}
               {siteSettings?.catalogSubtitle && (
-                <p className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
+                <p style={subtitleStyle} className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
                   {siteSettings.catalogSubtitle}
                 </p>
               )}
@@ -293,6 +320,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                     key={product.id}
                     id={`product-card-${product.id}`}
                     onClick={() => setSelectedProduct(product)}
+                    style={cardStyle}
                     className="glass-card p-5 rounded-2xl flex flex-col justify-between relative group hover:-translate-y-1 cursor-pointer"
                   >
                     
@@ -363,7 +391,7 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                           e.stopPropagation();
                           handleProductAction(product);
                         }}
-                        className="btn-magenta w-full py-3 rounded-lg text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all shadow-[0_2px_12px_rgba(255,0,255,0.1)]"
+                        className={`btn-magenta w-full py-3 text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 cursor-pointer transition-all shadow-[0_2px_12px_rgba(255,0,255,0.1)] ${getBtnRadiusClass()}`}
                       >
                         <MessageSquare size={13} className="text-white fill-white/10" />
                         <span>{product.buttonText || "QUERO COMEÇAR AGORA"}</span>
@@ -440,13 +468,13 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                 )}
                 
                 {siteSettings?.aboutTitle && (
-                  <h2 className="text-3xl md:text-4xl font-extrabold text-white tracking-tight">
+                  <h2 style={titleStyle} className={`font-extrabold text-white tracking-tight ${getSectionTitleSizeClass()}`}>
                     {siteSettings.aboutTitle}
                   </h2>
                 )}
 
                 {siteSettings?.aboutText && (
-                  <div className="text-sm sm:text-base text-brand-gray-light/80 leading-relaxed font-light space-y-4 max-w-2xl mx-auto md:mx-0 whitespace-pre-line">
+                  <div style={subtitleStyle} className="text-sm sm:text-base text-brand-gray-light/80 leading-relaxed font-light space-y-4 max-w-2xl mx-auto md:mx-0 whitespace-pre-line">
                     {siteSettings.aboutText}
                   </div>
                 )}
@@ -471,12 +499,12 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                   </span>
                 )}
                 {siteSettings?.approvalsTitle && (
-                  <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight uppercase">
+                  <h2 style={titleStyle} className={`font-extrabold text-white tracking-tight uppercase ${getSectionTitleSizeClass()}`}>
                     {siteSettings.approvalsTitle}
                   </h2>
                 )}
                 {siteSettings?.approvalsSubtitle && (
-                  <p className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
+                  <p style={subtitleStyle} className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
                     {siteSettings.approvalsSubtitle}
                   </p>
                 )}
@@ -559,12 +587,12 @@ export default function VisitorShowcase({ products, siteSettings, onNavigateToLo
                   FAQ
                 </span>
                 {siteSettings?.faqTitle && (
-                  <h2 className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight uppercase">
+                  <h2 style={titleStyle} className={`font-extrabold text-white tracking-tight uppercase ${getSectionTitleSizeClass()}`}>
                     {siteSettings.faqTitle}
                   </h2>
                 )}
                 {siteSettings?.faqSubtitle && (
-                  <p className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
+                  <p style={subtitleStyle} className="text-brand-gray-light/50 max-w-lg mx-auto text-xs sm:text-sm">
                     {siteSettings.faqSubtitle}
                   </p>
                 )}
